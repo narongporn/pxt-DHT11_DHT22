@@ -1,6 +1,7 @@
 /**
  * MakeCode editor extension for DHT11 and DHT22 humidity/temperature sensors
  * by Alan Wang
+ * Modified by Narongporn Laosrisin
  */
 
 enum DHTtype {
@@ -65,11 +66,11 @@ namespace dht11_dht22 {
         //request data
         pins.digitalWritePin(dataPin, 0) //begin protocol, pull down pin
         basic.pause(18)
-        
+
         if (pullUp) pins.setPull(dataPin, PinPullMode.PullUp) //pull up data pin if needed
         pins.digitalReadPin(dataPin) //pull up pin
         control.waitMicros(40)
-        
+
         if (pins.digitalReadPin(dataPin) == 1) {
             if (serialOtput) {
                 serial.writeLine(DHTstr + " not responding!")
@@ -80,20 +81,24 @@ namespace dht11_dht22 {
 
             _sensorresponding = true
 
-            while (pins.digitalReadPin(dataPin) == 0); //sensor response
-            while (pins.digitalReadPin(dataPin) == 1); //sensor response
+            //while (pins.digitalReadPin(dataPin) == 0); //sensor response
+            //while (pins.digitalReadPin(dataPin) == 1); //sensor response
+            pins.pulseIn(dataPin,PulseValue.High,100)
             
             //read data (5 bytes)
             for (let index = 0; index < 40; index++) {
-                while (pins.digitalReadPin(dataPin) == 1);
-                while (pins.digitalReadPin(dataPin) == 0);
-                control.waitMicros(35)
+                //while (pins.digitalReadPin(dataPin) == 1);
+                //while (pins.digitalReadPin(dataPin) == 0);
+                //control.waitMicros(28)
                 //if sensor still pull up data pin after 28 us it means 1, otherwise 0
-                if (pins.digitalReadPin(dataPin) == 1) dataArray[index] = true
+                //if (pins.digitalReadPin(dataPin) == 1) dataArray[index] = true
+                if (pins.pulseIn(dataPin, PulseValue.High, 100) > 30) {
+                    dataArray[index] = true
+                }
             }
 
             endTime = input.runningTimeMicros()
-            
+
             //convert byte number array to integer
             for (let index = 0; index < 5; index++)
                 for (let index2 = 0; index2 < 8; index2++)
@@ -102,6 +107,7 @@ namespace dht11_dht22 {
             //verify checksum
             checksumTmp = resultArray[0] + resultArray[1] + resultArray[2] + resultArray[3]
             checksum = resultArray[4]
+            serial.writeLine(resultArray[0] +" "+resultArray[1] +" "+resultArray[2] + " "+resultArray[3] + " "+resultArray[4])
             if (checksumTmp >= 512) checksumTmp -= 512
             if (checksumTmp >= 256) checksumTmp -= 256
             if (checksum == checksumTmp) _readSuccessful = true
