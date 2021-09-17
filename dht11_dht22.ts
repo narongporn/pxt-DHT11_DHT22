@@ -81,8 +81,10 @@ namespace dht11_dht22 {
             _sensorresponding = true
 
             while (pins.digitalReadPin(dataPin) == 0); //sensor response
+            serial.writeLine("step0")
             while (pins.digitalReadPin(dataPin) == 1); //sensor response
-
+            serial.writeLine("step1")
+            
             //read data (5 bytes)
             for (let index = 0; index < 40; index++) {
                 while (pins.digitalReadPin(dataPin) == 1);
