@@ -81,7 +81,6 @@ namespace dht11_dht22 {
             _sensorresponding = true
 
             while (pins.digitalReadPin(dataPin) == 0); //sensor response
-            serial.writeLine("step0")
             while (pins.digitalReadPin(dataPin) == 1); //sensor response
             serial.writeLine("step1")
             
@@ -95,7 +94,8 @@ namespace dht11_dht22 {
             }
 
             endTime = input.runningTimeMicros()
-
+            serial.writeLine("got data")
+            
             //convert byte number array to integer
             for (let index = 0; index < 5; index++)
                 for (let index2 = 0; index2 < 8; index2++)
