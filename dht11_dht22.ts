@@ -81,20 +81,13 @@ namespace dht11_dht22 {
 
             _sensorresponding = true
 
-            //while (pins.digitalReadPin(dataPin) == 0); //sensor response
-            //while (pins.digitalReadPin(dataPin) == 1); //sensor response
-            pins.pulseIn(dataPin,PulseValue.High,100)
+            pins.pulseIn(dataPin,PulseValue.High,100) //sensor response
             
             //read data (5 bytes)
             for (let index = 0; index < 40; index++) {
-                //while (pins.digitalReadPin(dataPin) == 1);
-                //while (pins.digitalReadPin(dataPin) == 0);
-                //control.waitMicros(28)
-                //if sensor still pull up data pin after 28 us it means 1, otherwise 0
+            //if pulse width > 28 us it means 1, otherwise 0
                 //if (pins.digitalReadPin(dataPin) == 1) dataArray[index] = true
-                if (pins.pulseIn(dataPin, PulseValue.High, 100) > 30) {
-                    dataArray[index] = true
-                }
+                if (pins.pulseIn(dataPin, PulseValue.High, 100) > 30) dataArray[index] = true
             }
 
             endTime = input.runningTimeMicros()
@@ -107,7 +100,7 @@ namespace dht11_dht22 {
             //verify checksum
             checksumTmp = resultArray[0] + resultArray[1] + resultArray[2] + resultArray[3]
             checksum = resultArray[4]
-            serial.writeLine(resultArray[0] +" "+resultArray[1] +" "+resultArray[2] + " "+resultArray[3] + " "+resultArray[4])
+            
             if (checksumTmp >= 512) checksumTmp -= 512
             if (checksumTmp >= 256) checksumTmp -= 256
             if (checksum == checksumTmp) _readSuccessful = true
